@@ -1,0 +1,169 @@
+:root {
+  font-family: "Nunito", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont,
+    sans-serif;
+  --graa: rgba(255, 255, 255, 0.7);
+  --moerke-gron: #0f5132;
+  --moerke-rod: #6f1d1b;
+  --sne: rgba(255, 255, 255, 0.15);
+  --braet: rgba(255, 255, 255, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: radial-gradient(circle at top, #1c2b4b 0%, #0b1528 55%, #050812 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.sne {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(var(--sne) 1px, transparent 1px);
+  background-size: 3px 3px;
+  animation: snefalder 10s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes snefalder {
+  from {
+    transform: translateY(-5%);
+  }
+  to {
+    transform: translateY(5%);
+  }
+}
+
+.spil-container {
+  position: relative;
+  padding: 2.5rem 2rem 2.5rem;
+  border-radius: 1.5rem;
+  background: rgba(12, 20, 37, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  width: min(90vw, 420px);
+}
+
+h1 {
+  margin-top: 0;
+  letter-spacing: 0.08em;
+}
+
+.tur-tekst {
+  margin-top: 0.2rem;
+  font-size: 1.1rem;
+  color: var(--graa);
+}
+
+.braet {
+  margin: 1.5rem auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.felt {
+  width: 110px;
+  aspect-ratio: 1;
+  border-radius: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: var(--braet);
+  color: white;
+  font-size: 2.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.felt:focus-visible {
+  outline: 3px dashed rgba(255, 255, 255, 0.7);
+  outline-offset: 3px;
+}
+
+.felt:hover:not(.deaktiveret) {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.nese {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  filter: blur(0.5px);
+  box-shadow: 0 0 20px currentColor;
+  transform: scale(0);
+  animation: pop 180ms ease-out forwards;
+}
+
+.nese.gron {
+  background: radial-gradient(circle, #9af37a 0%, #19c53d 45%, #128323 100%);
+  color: #54ff7a;
+}
+
+.nese.rod {
+  background: radial-gradient(circle, #ffc0c0 0%, #ff5555 45%, #c41414 100%);
+  color: #ff8484;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.2);
+  }
+  70% {
+    transform: scale(1.1);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.vinder {
+  border-color: #ffe066 !important;
+  box-shadow: 0 0 20px rgba(255, 224, 102, 0.7);
+}
+
+.resultat {
+  min-height: 1.5rem;
+  font-size: 1.2rem;
+  letter-spacing: 0.02em;
+}
+
+.reset-knap {
+  margin-top: 1rem;
+  padding: 0.7rem 1.8rem;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(120deg, #f94144, #f3722c);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(249, 65, 68, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reset-knap:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(249, 65, 68, 0.4);
+}
+
+.reset-knap:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 500px) {
+  .felt {
+    width: 26vw;
+  }
+}
