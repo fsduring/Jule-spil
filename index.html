@@ -5,26 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Jule Næse-spil</title>
     <link rel="stylesheet" href="style.css" />
+    <script defer src="script.js"></script>
   </head>
   <body>
-    <div class="sne"></div>
-    <main class="spil-container">
-      <h1>Jule Næse-spil</h1>
-      <p id="tur-tekst" class="tur-tekst">Tur: Grøn næse</p>
-      <section class="braet" aria-label="Spillebræt">
-        <button class="felt" data-index="0" aria-label="Felt 1"></button>
-        <button class="felt" data-index="1" aria-label="Felt 2"></button>
-        <button class="felt" data-index="2" aria-label="Felt 3"></button>
-        <button class="felt" data-index="3" aria-label="Felt 4"></button>
-        <button class="felt" data-index="4" aria-label="Felt 5"></button>
-        <button class="felt" data-index="5" aria-label="Felt 6"></button>
-        <button class="felt" data-index="6" aria-label="Felt 7"></button>
-        <button class="felt" data-index="7" aria-label="Felt 8"></button>
-        <button class="felt" data-index="8" aria-label="Felt 9"></button>
+    <div class="sne sne-forgrund" aria-hidden="true"></div>
+    <div class="sne sne-baggrund" aria-hidden="true"></div>
+
+    <main class="spil-container" aria-live="polite">
+      <header>
+        <h1>Jule Næse-spil</h1>
+        <p id="tur-tekst" class="tur-tekst" aria-live="assertive">Tur: Grøn næse</p>
+      </header>
+
+      <section class="braet" aria-label="Spillebræt" role="grid">
+        <button type="button" class="felt" data-index="0" role="gridcell" aria-label="Tomt felt 1"></button>
+        <button type="button" class="felt" data-index="1" role="gridcell" aria-label="Tomt felt 2"></button>
+        <button type="button" class="felt" data-index="2" role="gridcell" aria-label="Tomt felt 3"></button>
+        <button type="button" class="felt" data-index="3" role="gridcell" aria-label="Tomt felt 4"></button>
+        <button type="button" class="felt" data-index="4" role="gridcell" aria-label="Tomt felt 5"></button>
+        <button type="button" class="felt" data-index="5" role="gridcell" aria-label="Tomt felt 6"></button>
+        <button type="button" class="felt" data-index="6" role="gridcell" aria-label="Tomt felt 7"></button>
+        <button type="button" class="felt" data-index="7" role="gridcell" aria-label="Tomt felt 8"></button>
+        <button type="button" class="felt" data-index="8" role="gridcell" aria-label="Tomt felt 9"></button>
       </section>
+
       <p id="resultat" class="resultat" aria-live="polite">&nbsp;</p>
-      <button id="reset-knap" class="reset-knap">Start forfra</button>
+      <button type="button" id="reset-knap" class="reset-knap">Start forfra</button>
     </main>
-    <script src="script.js"></script>
   </body>
 </html>

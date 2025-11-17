@@ -1,122 +1,130 @@
-// Enkel datastruktur for spillet
-const felter = document.querySelectorAll(".felt");
-const turTekst = document.getElementById("tur-tekst");
-const resultatTekst = document.getElementById("resultat");
-const resetKnap = document.getElementById("reset-knap");
+// Hele spillet kapsles ind, så vi kun kører logikken når DOM'en er klar
+window.addEventListener("DOMContentLoaded", () => {
+  const felter = document.querySelectorAll(".felt");
+  const turTekst = document.getElementById("tur-tekst");
+  const resultatTekst = document.getElementById("resultat");
+  const resetKnap = document.getElementById("reset-knap");
 
-const SPILLERE = {
-  groen: {
-    navn: "Grøn næse",
-    klasse: "gron",
-  },
-  roed: {
-    navn: "Rød næse",
-    klasse: "rod",
-  },
-};
+  // Navne og klasser, så teksten kan holdes på dansk ét sted
+  const SPILLERE = {
+    gron: { navn: "Grøn næse", klasse: "gron" },
+    rod: { navn: "Rød næse", klasse: "rod" },
+  };
 
-let nuvaerendeSpiller = SPILLERE.groen;
-let braetStatus = Array(9).fill(null);
-let spilAktivt = true;
+  const vinderKombinationer = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
 
-const vinderKombinationer = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6],
-];
+  let braetStatus;
+  let aktivSpiller;
+  let spilAktivt;
 
-// Opdaterer tur teksten
-function opdaterTurTekst() {
-  turTekst.textContent = `Tur: ${nuvaerendeSpiller.navn}`;
-}
+  initSpil();
 
-// Viser resultat og låser brættet
-function afslutSpil(meddelelse) {
-  resultatTekst.textContent = meddelelse;
-  spilAktivt = false;
-  felter.forEach((felt) => felt.classList.add("deaktiveret"));
-}
+  // Event-listeners til felter og nulstilling
+  felter.forEach((felt) => {
+    felt.addEventListener("click", (event) => haandterFeltKlik(event.currentTarget));
+  });
+  resetKnap.addEventListener("click", initSpil);
 
-// Tjekker om der er en vinder eller uafgjort
-function tjekVinderen() {
-  for (const kombi of vinderKombinationer) {
-    const [a, b, c] = kombi;
-    if (
-      braetStatus[a] &&
-      braetStatus[a] === braetStatus[b] &&
-      braetStatus[a] === braetStatus[c]
-    ) {
-      kombi.forEach((index) => felter[index].classList.add("vinder"));
-      const vinderTekst =
-        braetStatus[a] === "gron"
-          ? "Grøn næse vinder!"
-          : "Rød næse vinder!";
-      afslutSpil(vinderTekst);
+  // Genstarter spillet til udgangspunkt
+  function initSpil() {
+    braetStatus = Array(9).fill(null);
+    aktivSpiller = SPILLERE.gron;
+    spilAktivt = true;
+    resultatTekst.innerHTML = "&nbsp;";
+    opdaterTurTekst();
+
+    felter.forEach((felt, index) => {
+      felt.innerHTML = "";
+      felt.classList.remove("vinder", "deaktiveret");
+      felt.disabled = false;
+      felt.setAttribute("aria-label", `Tomt felt ${index + 1}`);
+    });
+  }
+
+  // Viser hvilken spiller der er på tur
+  function opdaterTurTekst() {
+    turTekst.textContent = `Tur: ${aktivSpiller.navn}`;
+  }
+
+  // Placerer en næse og kontrollerer spilstatus
+  function haandterFeltKlik(felt) {
+    const index = Number(felt.dataset.index);
+    if (!spilAktivt || braetStatus[index]) {
       return;
     }
+
+    braetStatus[index] = aktivSpiller.klasse;
+    placerNese(felt, aktivSpiller.klasse);
+    felt.setAttribute("aria-label", `${aktivSpiller.navn} placeret`);
+
+    if (tjekVinder()) {
+      return;
+    }
+
+    if (braetStatus.every((feltStatus) => feltStatus)) {
+      afslutSpil("Uafgjort!");
+      return;
+    }
+
+    skiftSpiller();
   }
 
-  if (braetStatus.every((felt) => felt !== null)) {
-    afslutSpil("Uafgjort!");
-  }
-}
-
-// Håndterer klik på et felt
-function haandterFeltKlik(event) {
-  const felt = event.currentTarget;
-  const index = Number(felt.dataset.index);
-
-  if (!spilAktivt || braetStatus[index]) {
-    return;
-  }
-
-  braetStatus[index] = nuvaerendeSpiller.klasse;
-  placerNese(felt, nuvaerendeSpiller.klasse);
-  tjekVinderen();
-
-  if (spilAktivt) {
-    nuvaerendeSpiller =
-      nuvaerendeSpiller === SPILLERE.groen ? SPILLERE.roed : SPILLERE.groen;
+  // Skifter tur til den anden spiller
+  function skiftSpiller() {
+    aktivSpiller = aktivSpiller === SPILLERE.gron ? SPILLERE.rod : SPILLERE.gron;
     opdaterTurTekst();
-  } else {
-    turTekst.textContent = "Spillet er slut";
   }
-}
 
-// Tilføjer næsen visuelt og med en pop- animation
-function placerNese(felt, farveKlasse) {
-  const nese = document.createElement("span");
-  nese.className = `nese ${farveKlasse}`;
-  felt.appendChild(nese);
-  felt.setAttribute("aria-label", `${farveKlasse === "gron" ? "Grøn" : "Rød"} næse placeret`);
-}
+  // Tjekker om en spiller har vundet
+  function tjekVinder() {
+    for (const kombi of vinderKombinationer) {
+      const [a, b, c] = kombi;
+      if (
+        braetStatus[a] &&
+        braetStatus[a] === braetStatus[b] &&
+        braetStatus[a] === braetStatus[c]
+      ) {
+        markerVinder(kombi);
+        const vinderTekst =
+          braetStatus[a] === "gron" ? "Grøn næse vinder!" : "Rød næse vinder!";
+        afslutSpil(vinderTekst);
+        return true;
+      }
+    }
+    return false;
+  }
 
-// Nulstiller spillet
-function nulstilSpil() {
-  braetStatus = Array(9).fill(null);
-  nuvaerendeSpiller = SPILLERE.groen;
-  spilAktivt = true;
-  resultatTekst.textContent = "\u00a0";
-  opdaterTurTekst();
+  // Viser næsen grafisk
+  function placerNese(felt, klasse) {
+    const nese = document.createElement("span");
+    nese.className = `nese ${klasse}`;
+    felt.appendChild(nese);
+  }
 
-  felter.forEach((felt) => {
-    felt.innerHTML = "";
-    felt.classList.remove("vinder", "deaktiveret");
-    felt.setAttribute("aria-label", "Tomt felt");
-  });
-}
+  // Viser tydeligt hvilke felter der indgår i en sejr
+  function markerVinder(kombi) {
+    kombi.forEach((index) => {
+      felter[index].classList.add("vinder");
+    });
+  }
 
-// Tilknyt event-listeners
-felter.forEach((felt) => {
-  felt.addEventListener("click", haandterFeltKlik);
-  felt.setAttribute("aria-label", "Tomt felt");
+  // Låser brættet og viser resultatet
+  function afslutSpil(tekst) {
+    resultatTekst.textContent = tekst;
+    turTekst.textContent = "Spillet er slut";
+    spilAktivt = false;
+    felter.forEach((felt) => {
+      felt.classList.add("deaktiveret");
+      felt.disabled = true;
+    });
+  }
 });
-resetKnap.addEventListener("click", nulstilSpil);
-
-// Sørg for korrekt starttekst
-opdaterTurTekst();
